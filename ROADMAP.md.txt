@@ -1,0 +1,83 @@
+# Project Roadmap
+
+## Phase 1 - Architecture
+
+* Project structure
+* Folder organization
+* Prisma schema
+* API design
+* Technical decisions
+
+Status: ✅ Completed — 2026-06-11
+
+---
+
+## Phase 2 - Database
+
+* Prisma models
+* Migrations
+* Seed data
+
+Status: Pending
+
+---
+
+## Phase 3 - Authentication
+
+* Single-user login
+* Session handling
+* Route protection
+
+Status: Pending
+
+---
+
+## Phase 4 - Incident API
+
+* Create incident
+* Update incident
+* Delete incident
+* Get incident
+* Search incidents
+
+Status: Pending
+
+---
+
+## Phase 5 - Incident UI
+
+* Incident form
+* Incident list
+* Incident details
+
+Status: Pending
+
+---
+
+## Phase 6 - Dashboard
+
+* Metrics
+* Charts
+* Summary cards
+
+Status: Pending
+
+---
+
+## Phase 7 - Testing & Validation
+
+* Validation
+* Error handling
+* Empty states
+
+Status: Pending
+
+---
+
+## Phase 8 - Refactoring
+
+* Cleanup
+* Optimization
+* Documentation
+
+Status: Pending

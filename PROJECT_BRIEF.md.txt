@@ -1,0 +1,108 @@
+# IT Incident Log System
+
+## Overview
+
+Internal IT Incident Log System for a single IT operator.
+
+Purpose:
+Track and manage daily IT support incidents.
+
+This is NOT a helpdesk platform.
+
+Only one user (the IT operator) will use the system.
+
+No public users.
+
+---
+
+## Tech Stack
+
+Frontend
+
+* Nuxt 4
+* Vue 3
+* TypeScript
+* Tailwind CSS
+
+Backend
+
+* Nuxt Server Routes
+
+Database
+
+* PostgreSQL
+
+ORM
+
+* Prisma
+
+Validation
+
+* Zod
+
+Authentication
+
+* Single-user login using environment variables
+
+---
+
+## Core Features
+
+### Incident Management
+
+Fields:
+
+* Reporter Name
+* Category
+* Priority
+* Title
+* Description
+* Status
+* Resolution Notes
+* Created Date
+* Updated Date
+* Resolved Date
+
+### Incident List
+
+* Pagination
+* Search
+* Sorting
+* Filtering
+* Inline status updates
+
+### Incident Details
+
+* View incident
+* Edit incident
+* Update status
+* Add resolution notes
+
+### Dashboard
+
+* Total incidents this week
+* Total incidents this month
+* Category breakdown
+* Status breakdown
+* Average resolution time
+
+---
+
+## Design Principles
+
+* Professional
+* Minimal
+* Internal operations tool
+* Inspired by Linear
+* Inspired by Plane
+
+---
+
+## Out of Scope
+
+* Email notifications
+* File uploads
+* SLA tracking
+* Multi-user support
+* User portal
+* Integrations

@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────
+
+enum IncidentCategory {
+  HARDWARE
+  SOFTWARE
+  NETWORK
+  ACCESS
+  EMAIL
+  PRINTER
+  PHONE
+  OTHER
+}
+
+enum IncidentPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IncidentStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+// ─────────────────────────────────────────────────────────────
+// Models
+// ─────────────────────────────────────────────────────────────
+
+model Incident {
+  id              String           @id @default(cuid())
+
+  // Core fields
+  title           String
+  description     String
+
+  // Reporter
+  reporterName    String
+
+  // Classification
+  category        IncidentCategory
+  priority        IncidentPriority
+  status          IncidentStatus   @default(OPEN)
+
+  // Resolution
+  resolutionNotes String?
+
+  // Timestamps
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  resolvedAt      DateTime?
+
+  // Indexes for common query patterns
+  @@index([status])
+  @@index([category])
+  @@index([priority])
+  @@index([createdAt])
+  @@index([status, createdAt])
+}

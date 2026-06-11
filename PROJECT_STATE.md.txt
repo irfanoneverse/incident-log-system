@@ -1,0 +1,109 @@
+# Project State
+
+## Current Status
+
+Completed:
+
+* Phase 1 — Architecture
+
+In Progress:
+
+* None
+
+Pending:
+
+* Phase 2 — Database (migrations + seed)
+* Phase 3 — Authentication (login page + session + route guards)
+* Phase 4 — Incident API (wiring + testing)
+* Phase 5 — Incident UI (list, form, detail)
+* Phase 6 — Dashboard
+* Phase 7 — Testing & Validation
+* Phase 8 — Refactoring
+
+---
+
+## Architecture Decisions
+
+* **Framework**: Nuxt 4 (Nuxt 4.4.8) with Vue 3 and TypeScript strict mode.
+* **Styling**: Tailwind CSS via `@nuxtjs/tailwindcss` module.
+* **ORM**: Prisma 6 with PostgreSQL datasource.
+* **Validation**: Zod — single source of truth for all request validation.
+* **Auth**: Cookie-based session (`HttpOnly`, `SameSite=lax`, 8-hour TTY).
+  Credentials stored in env vars (`ADMIN_USERNAME`, `ADMIN_PASSWORD`).
+* **ID type**: `cuid()` — URL-safe, no UUID verbosity.
+* **Prisma singleton**: `globalForPrisma` pattern to prevent multiple clients on hot-reload.
+
+---
+
+## Database Decisions
+
+* Single model: `Incident`.
+* Three enums: `IncidentCategory`, `IncidentPriority`, `IncidentStatus`.
+* `resolvedAt` is managed automatically by the API layer (not manually set by client).
+* Indexes on: `status`, `category`, `priority`, `createdAt`, `(status, createdAt)`.
+
+---
+
+## API Decisions
+
+* All API routes under `/api/`.
+* Auth routes at `/api/auth/*` — public (no cookie required).
+* All other `/api/*` routes protected by global server middleware.
+* Incident list uses Prisma parallel `count` + `findMany` for performance.
+* Dashboard stats fetched in a single `/api/dashboard/stats` request (5 parallel queries).
+
+---
+
+## UI Decisions
+
+No decisions recorded yet. (Phase 5)
+
+---
+
+## Technical Debt
+
+None.
+
+---
+
+## Files Created in Phase 1
+
+### Project Scaffold
+
+* `nuxt.config.ts` — Nuxt 4 config with Tailwind, TypeScript, runtimeConfig
+* `package.json` — All dependencies declared (Prisma, Zod, Tailwind, tsx)
+* `.env.example` — Environment variable template
+* `.gitignore` — Nuxt + Prisma entries
+
+### Prisma
+
+* `prisma/schema.prisma` — Incident model + 3 enums + indexes
+* `prisma/seed.ts` — 5 realistic sample incidents
+
+### Server
+
+* `server/lib/prisma.ts` — Prisma singleton
+* `server/validations/incident.ts` — All Zod schemas
+* `server/utils/helpers.ts` — Error helpers, session, pagination
+* `server/middleware/auth.ts` — Global auth guard
+* `server/api/auth/login.post.ts`
+* `server/api/auth/logout.post.ts`
+* `server/api/auth/me.get.ts`
+* `server/api/incidents/index.get.ts`
+* `server/api/incidents/index.post.ts`
+* `server/api/incidents/[id].get.ts`
+* `server/api/incidents/[id].patch.ts`
+* `server/api/incidents/[id].delete.ts`
+* `server/api/dashboard/stats.get.ts`
+
+### Frontend (types only — no pages yet)
+
+* `app/types/index.ts` — Shared TypeScript types + display label maps
+
+---
+
+## Next Recommended Task
+
+Phase 2: Database
+Run `npm install`, then `npm run db:migrate` to create the first migration,
+then `npm run db:seed` to populate development data.
