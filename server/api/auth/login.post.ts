@@ -4,8 +4,8 @@
  * Validates username/password against environment variables.
  * Sets a session cookie on success.
  */
-import { LoginSchema } from '~/server/validations/incident'
-import { setAuthSession, createValidationError, createUnauthorizedError } from '~/server/utils/helpers'
+import { LoginSchema } from '../../validations/incident'
+import { setAuthSession, createValidationError, createUnauthorizedError } from '../../utils/helpers'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)

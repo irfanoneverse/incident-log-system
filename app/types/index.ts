@@ -82,6 +82,28 @@ export interface DashboardStats {
 }
 
 // ─────────────────────────────────────────────────────────────
+// API input types (mirrors server Zod schemas)
+// ─────────────────────────────────────────────────────────────
+
+export interface CreateIncidentInput {
+  title: string
+  description: string
+  reporterName: string
+  category: IncidentCategory
+  priority: IncidentPriority
+}
+
+export interface UpdateIncidentInput {
+  title?: string
+  description?: string
+  reporterName?: string
+  category?: IncidentCategory
+  priority?: IncidentPriority
+  status?: IncidentStatus
+  resolutionNotes?: string | null
+}
+
+// ─────────────────────────────────────────────────────────────
 // Display helpers (for labels and colors in the UI)
 // ─────────────────────────────────────────────────────────────
 

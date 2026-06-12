@@ -13,9 +13,9 @@
  *   sortBy     - Sort field (createdAt | updatedAt | priority | status | title)
  *   sortOrder  - Sort direction (asc | desc)
  */
-import { prisma } from '~/server/lib/prisma'
-import { ListIncidentsQuerySchema } from '~/server/validations/incident'
-import { createValidationError, buildPaginationMeta } from '~/server/utils/helpers'
+import { prisma } from '../../lib/prisma'
+import { ListIncidentsQuerySchema } from '../../validations/incident'
+import { createValidationError, buildPaginationMeta } from '../../utils/helpers'
 import type { Prisma } from '@prisma/client'
 
 export default defineEventHandler(async (event) => {

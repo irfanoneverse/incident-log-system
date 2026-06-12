@@ -8,7 +8,7 @@
  * - Status breakdown
  * - Average resolution time (in hours)
  */
-import { prisma } from '~/server/lib/prisma'
+import { prisma } from '../../lib/prisma'
 
 export default defineEventHandler(async () => {
   const now = new Date()

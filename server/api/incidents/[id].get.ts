@@ -3,8 +3,8 @@
  *
  * Fetch a single incident by ID.
  */
-import { prisma } from '~/server/lib/prisma'
-import { createNotFoundError } from '~/server/utils/helpers'
+import { prisma } from '../../lib/prisma'
+import { createNotFoundError } from '../../utils/helpers'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')

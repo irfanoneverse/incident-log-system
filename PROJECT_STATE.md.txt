@@ -5,6 +5,13 @@
 Completed:
 
 * Phase 1 — Architecture
+* Phase 2 — Database (migrations + seed)
+* Phase 3 — Authentication (login page + session + route guards)
+* Phase 4 — Incident API (all routes verified, imports fixed for Nuxt 4)
+* Phase 5 — Incident UI (list, create, detail/edit)
+* Phase 6 — Dashboard (stat cards + status/category breakdowns)
+* Phase 7 — Testing & Validation (error page, sort headers, debounce cleanup, type cleanup)
+* Phase 8 — Refactoring (unused imports removed, page titles added, global head config)
 
 In Progress:
 
@@ -12,13 +19,7 @@ In Progress:
 
 Pending:
 
-* Phase 2 — Database (migrations + seed)
-* Phase 3 — Authentication (login page + session + route guards)
-* Phase 4 — Incident API (wiring + testing)
-* Phase 5 — Incident UI (list, form, detail)
-* Phase 6 — Dashboard
-* Phase 7 — Testing & Validation
-* Phase 8 — Refactoring
+* None — all phases complete ✅
 
 ---
 
@@ -32,6 +33,7 @@ Pending:
   Credentials stored in env vars (`ADMIN_USERNAME`, `ADMIN_PASSWORD`).
 * **ID type**: `cuid()` — URL-safe, no UUID verbosity.
 * **Prisma singleton**: `globalForPrisma` pattern to prevent multiple clients on hot-reload.
+* **Server imports**: Nuxt 4 resolves `~` to `app/` (srcDir), not the project root. All `server/` files use relative imports for `server/lib/`, `server/validations/`, and `server/utils/`.
 
 ---
 
@@ -56,7 +58,10 @@ Pending:
 
 ## UI Decisions
 
-No decisions recorded yet. (Phase 5)
+* **Auth composable**: `useAuth()` with `useState('auth.state')` — single shared reactive state across the app.
+* **Auth check strategy**: `null` = unknown (first load), `true` = authenticated, `false` = not authenticated. Fetches once per session; subsequent navigations skip the network call.
+* **Login page**: `definePageMeta({ layout: false })` to opt out of any default layout.
+* **Placeholder index**: Temporary `app/pages/index.vue` to validate auth flow end-to-end; replaced in Phase 5.
 
 ---
 
@@ -102,8 +107,72 @@ None.
 
 ---
 
+## Files Created in Phase 2
+
+* `.env` — Local environment variables (not committed)
+* `prisma/migrations/20260612020237_init/migration.sql` — Initial DB migration
+* `node_modules/` — Installed dependencies (not committed)
+
+---
+
+## Files Created in Phase 3
+
+* `app/app.vue` — Replaced `NuxtWelcome` with `NuxtPage`
+* `app/composables/useAuth.ts` — Login, logout, shared auth state
+* `app/middleware/auth.global.ts` — Global route guard
+* `app/pages/login.vue` — Login form UI
+* `app/pages/index.vue` — Temporary placeholder (replaced in Phase 5)
+
+---
+
+## Files Created in Phase 4
+
+* All `server/api/` imports fixed from `~/server/*` to relative paths (Nuxt 4 srcDir change)
+
+---
+
+## Files Created in Phase 5
+
+* `app/types/index.ts` — Added `CreateIncidentInput`, `UpdateIncidentInput`
+* `app/utils/format.ts` — `formatDate`, `formatDateTime` (auto-imported)
+* `app/layouts/default.vue` — Sidebar + main shell
+* `app/components/StatusBadge.vue`
+* `app/components/PriorityBadge.vue`
+* `app/components/AppPagination.vue`
+* `app/components/IncidentForm.vue` — Shared create/edit form
+* `app/composables/useIncidents.ts` — CRUD operations
+* `app/pages/index.vue` — Redirects to `/incidents`
+* `app/pages/incidents/index.vue` — List with search, filter, pagination, inline status
+* `app/pages/incidents/new.vue` — Create form
+* `app/pages/incidents/[id].vue` — Detail view + edit mode + delete
+
+---
+
+## Files Created in Phase 6
+
+* `app/pages/dashboard.vue` — Stat cards + status/category breakdown bars
+* `app/layouts/default.vue` — Added "Dashboard" nav link to sidebar
+
+---
+
+## Files Created/Modified in Phase 7 & 8
+
+* `app/error.vue` — Custom error page (404, 401, 500)
+* `app/pages/incidents/index.vue` — Sortable column headers (Title, Priority, Status, Created); debounce cleanup on unmount; page title
+* `app/pages/incidents/[id].vue` — Removed unused imports; reactive page title from incident title
+* `app/pages/incidents/new.vue` — Page title
+* `app/pages/dashboard.vue` — Page title
+* `app/pages/login.vue` — Page title
+* `nuxt.config.ts` — Global `titleTemplate`, `lang`, meta description
+
+---
+
 ## Next Recommended Task
 
-Phase 2: Database
-Run `npm install`, then `npm run db:migrate` to create the first migration,
-then `npm run db:seed` to populate development data.
+Project is complete. Start the dev server and do a final end-to-end walkthrough:
+1. `npm run dev` in WSL terminal
+2. Test login / logout
+3. Create, edit, update status, delete an incident
+4. Search, filter, sort the list
+5. Check dashboard stats update live
+6. Verify browser tab titles are correct

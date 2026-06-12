@@ -6,6 +6,19 @@ export default defineNuxtConfig({
   // Modules
   modules: ['@nuxtjs/tailwindcss'],
 
+  // Global HTML head
+  app: {
+    head: {
+      titleTemplate: '%s | IT Incident Log',
+      htmlAttrs: { lang: 'en' },
+      meta: [{ name: 'description', content: 'Internal IT incident tracking system' }],
+      bodyAttrs: { class: 'antialiased font-sans' },
+    },
+  },
+
+  // Global CSS
+  css: ['~/assets/css/main.css'],
+
   // TypeScript
   typescript: {
     strict: true,

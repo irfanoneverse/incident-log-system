@@ -3,7 +3,7 @@
  *
  * Clears the session cookie.
  */
-import { clearAuthSession } from '~/server/utils/helpers'
+import { clearAuthSession } from '../../utils/helpers'
 
 export default defineEventHandler((event) => {
   clearAuthSession(event)

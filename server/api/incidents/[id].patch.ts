@@ -5,9 +5,9 @@
  * Automatically sets resolvedAt when status changes to RESOLVED.
  * Clears resolvedAt when status moves back to OPEN or IN_PROGRESS.
  */
-import { prisma } from '~/server/lib/prisma'
-import { UpdateIncidentSchema } from '~/server/validations/incident'
-import { createValidationError, createNotFoundError } from '~/server/utils/helpers'
+import { prisma } from '../../lib/prisma'
+import { UpdateIncidentSchema } from '../../validations/incident'
+import { createValidationError, createNotFoundError } from '../../utils/helpers'
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, 'id')

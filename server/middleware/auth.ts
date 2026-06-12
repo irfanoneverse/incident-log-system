@@ -2,7 +2,7 @@
  * Auth middleware — protects all /api/* routes except /api/auth/*.
  * Reads the session cookie and returns 401 if not authenticated.
  */
-import { isAuthenticated, createUnauthorizedError } from '~/server/utils/helpers'
+import { isAuthenticated, createUnauthorizedError } from '../utils/helpers'
 
 export default defineEventHandler((event) => {
   const url = getRequestURL(event)

@@ -5,9 +5,9 @@
  *
  * Body: CreateIncidentInput
  */
-import { prisma } from '~/server/lib/prisma'
-import { CreateIncidentSchema } from '~/server/validations/incident'
-import { createValidationError } from '~/server/utils/helpers'
+import { prisma } from '../../lib/prisma'
+import { CreateIncidentSchema } from '../../validations/incident'
+import { createValidationError } from '../../utils/helpers'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
