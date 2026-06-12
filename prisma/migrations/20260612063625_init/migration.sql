@@ -1,8 +1,8 @@
 -- CreateEnum
-CREATE TYPE "IncidentCategory" AS ENUM ('HARDWARE', 'SOFTWARE', 'NETWORK', 'ACCESS', 'EMAIL', 'PRINTER', 'PHONE', 'OTHER');
+CREATE TYPE "IncidentCategory" AS ENUM ('HARDWARE', 'SOFTWARE', 'NETWORK', 'OTHERS');
 
 -- CreateEnum
-CREATE TYPE "IncidentPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
+CREATE TYPE "IncidentPriority" AS ENUM ('LOW', 'MEDIUM', 'CRITICAL');
 
 -- CreateEnum
 CREATE TYPE "IncidentStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED');

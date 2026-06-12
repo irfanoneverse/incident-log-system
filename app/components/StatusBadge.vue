@@ -4,10 +4,9 @@ import type { IncidentStatus } from '~/types'
 defineProps<{ status: IncidentStatus }>()
 
 const config: Record<IncidentStatus, { label: string; cls: string }> = {
-  OPEN:        { label: 'Open',        cls: 'bg-blue-500/20 text-blue-300 ring-1 ring-blue-500/30' },
-  IN_PROGRESS: { label: 'In Progress', cls: 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30' },
-  RESOLVED:    { label: 'Resolved',    cls: 'bg-emerald-500/20 text-emerald-300 ring-1 ring-emerald-500/30' },
-  CLOSED:      { label: 'Closed',      cls: 'bg-zinc-700/60 text-zinc-400 ring-1 ring-zinc-600/40' },
+  IN_PROGRESS:  { label: 'In Progress', cls: 'bg-amber-100 text-amber-700 ring-1 ring-amber-200 dark:bg-amber-500/20 dark:text-amber-300 dark:ring-amber-500/30' },
+  RESOLVED:     { label: 'Resolved',    cls: 'bg-emerald-100 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-300 dark:ring-emerald-500/30' },
+  IRRESOLVABLE: { label: 'Irresolvable', cls: 'bg-red-100 text-red-700 ring-1 ring-red-200 dark:bg-red-500/20 dark:text-red-300 dark:ring-red-500/30' },
 }
 </script>
 

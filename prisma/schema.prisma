@@ -18,25 +18,19 @@ enum IncidentCategory {
   HARDWARE
   SOFTWARE
   NETWORK
-  ACCESS
-  EMAIL
-  PRINTER
-  PHONE
-  OTHER
+  OTHERS
 }
 
 enum IncidentPriority {
   LOW
   MEDIUM
-  HIGH
   CRITICAL
 }
 
 enum IncidentStatus {
-  OPEN
   IN_PROGRESS
   RESOLVED
-  CLOSED
+  IRRESOLVABLE
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -56,7 +50,7 @@ model Incident {
   // Classification
   category        IncidentCategory
   priority        IncidentPriority
-  status          IncidentStatus   @default(OPEN)
+  status          IncidentStatus   @default(IN_PROGRESS)
 
   // Resolution
   resolutionNotes String?

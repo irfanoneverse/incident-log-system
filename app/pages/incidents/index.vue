@@ -58,30 +58,23 @@ const { data, pending, refresh } = await useAsyncData<PaginatedResponse<Incident
 const incidents = computed(() => data.value?.data ?? [])
 const pagination = computed(() => data.value?.pagination ?? null)
 
-const statusOptions: { value: IncidentStatus; label: string }[] = [
-  { value: 'OPEN',        label: 'Open' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
-  { value: 'RESOLVED',    label: 'Resolved' },
-  { value: 'CLOSED',      label: 'Closed' },
-]
+// Reactive map of in-flight status overrides (useAsyncData uses shallowRef — direct mutation is not reactive)
+const statusOverrides = reactive(new Map<string, IncidentStatus>())
 
-const statusTextClass: Record<IncidentStatus, string> = {
-  OPEN:        'text-blue-300',
-  IN_PROGRESS: 'text-amber-300',
-  RESOLVED:    'text-emerald-300',
-  CLOSED:      'text-zinc-400',
+function effectiveStatus(incident: IncidentRow): IncidentStatus {
+  return statusOverrides.get(incident.id) ?? incident.status
 }
 
 async function handleStatusChange(incident: IncidentRow, status: IncidentStatus) {
+  statusOverrides.set(incident.id, status)
   try {
     await updateIncident(incident.id, { status })
-    await refresh()
   } catch {
-    await refresh()
+    statusOverrides.delete(incident.id) // revert to server value on failure
   }
 }
 
-const selectCls = 'px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 rounded-lg text-[13px] text-zinc-300 focus:outline-none focus:border-zinc-500 transition-colors'
+const selectCls = 'px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text-[13px] text-gray-700 focus:outline-none focus:border-gray-500 transition-colors dark:bg-zinc-900 dark:border-zinc-700 dark:text-zinc-300 dark:focus:border-zinc-500'
 </script>
 
 <template>
@@ -90,14 +83,14 @@ const selectCls = 'px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 rounded-lg t
     <!-- Page header -->
     <div class="flex items-center justify-between mb-5">
       <div>
-        <h1 class="text-base font-semibold text-white">Incidents</h1>
-        <p v-if="pagination" class="text-xs text-zinc-500 mt-0.5">
+        <h1 class="text-base font-semibold text-gray-900 dark:text-white">Incidents</h1>
+        <p v-if="pagination" class="text-xs text-gray-400 mt-0.5 dark:text-zinc-500">
           {{ pagination.total }} total
         </p>
       </div>
       <NuxtLink
         to="/incidents/new"
-        class="h-8 px-3.5 bg-white text-zinc-900 text-[13px] font-semibold rounded-lg hover:bg-zinc-100 active:bg-zinc-200 transition-colors inline-flex items-center gap-1.5"
+        class="h-8 px-3.5 bg-gray-900 text-white text-[13px] font-semibold rounded-lg hover:bg-gray-800 active:bg-gray-700 transition-colors inline-flex items-center gap-1.5 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100 dark:active:bg-zinc-200"
       >
         <span class="text-base leading-none">+</span> New incident
       </NuxtLink>
@@ -110,73 +103,67 @@ const selectCls = 'px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 rounded-lg t
           v-model="searchInput"
           type="text"
           placeholder="Search incidents…"
-          class="w-full h-8 pl-3 pr-3 bg-zinc-900 border border-zinc-700 rounded-lg text-[13px] text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-500/20 transition-all"
+          class="w-full h-8 pl-3 pr-3 bg-white border border-gray-300 rounded-lg text-[13px] text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-500/20 transition-all dark:bg-zinc-900 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-600 dark:focus:border-zinc-500 dark:focus:ring-zinc-500/20"
         />
       </div>
       <select :value="filters.status ?? ''" :class="selectCls" @change="setFilter('status', ($event.target as HTMLSelectElement).value || undefined)">
         <option value="">All statuses</option>
-        <option value="OPEN">Open</option>
         <option value="IN_PROGRESS">In Progress</option>
         <option value="RESOLVED">Resolved</option>
-        <option value="CLOSED">Closed</option>
+        <option value="IRRESOLVABLE">Irresolvable</option>
       </select>
       <select :value="filters.category ?? ''" :class="selectCls" @change="setFilter('category', ($event.target as HTMLSelectElement).value || undefined)">
         <option value="">All categories</option>
         <option value="HARDWARE">Hardware</option>
         <option value="SOFTWARE">Software</option>
         <option value="NETWORK">Network</option>
-        <option value="ACCESS">Access</option>
-        <option value="EMAIL">Email</option>
-        <option value="PRINTER">Printer</option>
-        <option value="PHONE">Phone</option>
-        <option value="OTHER">Other</option>
+        <option value="OTHERS">Others</option>
       </select>
       <select :value="filters.priority ?? ''" :class="selectCls" @change="setFilter('priority', ($event.target as HTMLSelectElement).value || undefined)">
         <option value="">All priorities</option>
         <option value="LOW">Low</option>
         <option value="MEDIUM">Medium</option>
-        <option value="HIGH">High</option>
         <option value="CRITICAL">Critical</option>
       </select>
     </div>
 
     <!-- Table -->
-    <div class="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
+    <div class="rounded-xl border border-gray-200 bg-white overflow-hidden dark:border-zinc-800 dark:bg-zinc-900">
       <table class="w-full text-left">
         <thead>
-          <tr class="border-b border-zinc-800">
+          <tr class="border-b border-gray-200 dark:border-zinc-800">
             <th
-              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-zinc-200"
-              :class="filters.sortBy === 'title' ? 'text-zinc-200' : 'text-zinc-500'"
+              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-gray-900 dark:hover:text-zinc-200"
+              :class="filters.sortBy === 'title' ? 'text-gray-900 dark:text-zinc-200' : 'text-gray-500 dark:text-zinc-500'"
               @click="toggleSort('title')"
             >Title{{ sortIcon('title') }}</th>
-            <th class="px-4 py-2.5 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Reporter</th>
-            <th class="px-4 py-2.5 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Category</th>
+            <th class="px-4 py-2.5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider dark:text-zinc-500">Reporter</th>
+            <th class="px-4 py-2.5 text-[11px] font-semibold text-gray-500 uppercase tracking-wider dark:text-zinc-500">Category</th>
             <th
-              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-zinc-200"
-              :class="filters.sortBy === 'priority' ? 'text-zinc-200' : 'text-zinc-500'"
+              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-gray-900 dark:hover:text-zinc-200"
+              :class="filters.sortBy === 'priority' ? 'text-gray-900 dark:text-zinc-200' : 'text-gray-500 dark:text-zinc-500'"
               @click="toggleSort('priority')"
             >Priority{{ sortIcon('priority') }}</th>
             <th
-              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-zinc-200"
-              :class="filters.sortBy === 'status' ? 'text-zinc-200' : 'text-zinc-500'"
+              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-gray-900 dark:hover:text-zinc-200"
+              :class="filters.sortBy === 'status' ? 'text-gray-900 dark:text-zinc-200' : 'text-gray-500 dark:text-zinc-500'"
               @click="toggleSort('status')"
             >Status{{ sortIcon('status') }}</th>
             <th
-              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-zinc-200"
-              :class="filters.sortBy === 'createdAt' ? 'text-zinc-200' : 'text-zinc-500'"
+              class="px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider cursor-pointer select-none transition-colors hover:text-gray-900 dark:hover:text-zinc-200"
+              :class="filters.sortBy === 'createdAt' ? 'text-gray-900 dark:text-zinc-200' : 'text-gray-500 dark:text-zinc-500'"
               @click="toggleSort('createdAt')"
             >Created{{ sortIcon('createdAt') }}</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-zinc-800/70">
+        <tbody class="divide-y divide-gray-100 dark:divide-zinc-800/70">
           <tr v-if="pending">
-            <td colspan="6" class="px-4 py-12 text-center text-sm text-zinc-600">Loading…</td>
+            <td colspan="6" class="px-4 py-12 text-center text-sm text-gray-400 dark:text-zinc-600">Loading…</td>
           </tr>
           <tr v-else-if="!incidents.length">
             <td colspan="6" class="px-4 py-12 text-center">
-              <p class="text-sm text-zinc-500">No incidents found.</p>
-              <NuxtLink to="/incidents/new" class="mt-2 inline-block text-xs text-zinc-400 hover:text-white underline transition-colors">
+              <p class="text-sm text-gray-500 dark:text-zinc-500">No incidents found.</p>
+              <NuxtLink to="/incidents/new" class="mt-2 inline-block text-xs text-gray-400 hover:text-gray-900 underline transition-colors dark:text-zinc-400 dark:hover:text-white">
                 Create one
               </NuxtLink>
             </td>
@@ -185,39 +172,28 @@ const selectCls = 'px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 rounded-lg t
             v-for="incident in incidents"
             v-else
             :key="incident.id"
-            class="hover:bg-zinc-800/40 transition-colors group"
+            class="hover:bg-gray-50 transition-colors group dark:hover:bg-zinc-800/40"
           >
             <td class="px-4 py-3 max-w-xs">
               <NuxtLink
                 :to="`/incidents/${incident.id}`"
-                class="text-[13px] font-medium text-zinc-100 hover:text-white line-clamp-1 transition-colors"
+                class="text-[13px] font-medium text-gray-800 hover:text-gray-900 line-clamp-1 transition-colors dark:text-zinc-100 dark:hover:text-white"
               >
                 {{ incident.title }}
               </NuxtLink>
             </td>
-            <td class="px-4 py-3 text-[13px] text-zinc-400 whitespace-nowrap">{{ incident.reporterName }}</td>
-            <td class="px-4 py-3 text-[13px] text-zinc-400">{{ CATEGORY_LABELS[incident.category] }}</td>
+            <td class="px-4 py-3 text-[13px] text-gray-500 whitespace-nowrap dark:text-zinc-400">{{ incident.reporterName }}</td>
+            <td class="px-4 py-3 text-[13px] text-gray-500 dark:text-zinc-400">{{ CATEGORY_LABELS[incident.category] }}</td>
             <td class="px-4 py-3">
               <PriorityBadge :priority="incident.priority" />
             </td>
             <td class="px-4 py-3">
-              <select
-                :value="incident.status"
-                class="bg-transparent border-none text-xs font-medium cursor-pointer focus:outline-none py-0.5 -ml-0.5 rounded"
-                :class="statusTextClass[incident.status]"
-                @change="handleStatusChange(incident, ($event.target as HTMLSelectElement).value as IncidentStatus)"
-              >
-                <option
-                  v-for="opt in statusOptions"
-                  :key="opt.value"
-                  :value="opt.value"
-                  class="bg-zinc-900 text-white"
-                >
-                  {{ opt.label }}
-                </option>
-              </select>
+              <StatusSelect
+                :value="effectiveStatus(incident)"
+                @change="handleStatusChange(incident, $event)"
+              />
             </td>
-            <td class="px-4 py-3 text-[13px] text-zinc-500 whitespace-nowrap tabular-nums">
+            <td class="px-4 py-3 text-[13px] text-gray-400 whitespace-nowrap tabular-nums dark:text-zinc-500">
               {{ formatDate(incident.createdAt) }}
             </td>
           </tr>

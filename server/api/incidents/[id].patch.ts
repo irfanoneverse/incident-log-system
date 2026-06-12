@@ -26,12 +26,12 @@ export default defineEventHandler(async (event) => {
 
   const updateData = result.data
 
-  // Auto-manage resolvedAt
-  if (updateData.status === 'RESOLVED' || updateData.status === 'CLOSED') {
+  // Auto-manage resolvedAt based on terminal vs active status
+  if (updateData.status === 'RESOLVED' || updateData.status === 'IRRESOLVABLE') {
     if (!existing.resolvedAt) {
       ;(updateData as Record<string, unknown>).resolvedAt = new Date()
     }
-  } else if (updateData.status === 'OPEN' || updateData.status === 'IN_PROGRESS') {
+  } else if (updateData.status === 'IN_PROGRESS') {
     ;(updateData as Record<string, unknown>).resolvedAt = null
   }
 

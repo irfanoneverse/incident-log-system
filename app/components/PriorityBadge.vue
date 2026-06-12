@@ -4,10 +4,9 @@ import type { IncidentPriority } from '~/types'
 defineProps<{ priority: IncidentPriority }>()
 
 const config: Record<IncidentPriority, { label: string; dot: string; text: string }> = {
-  LOW:      { label: 'Low',      dot: 'bg-zinc-500',    text: 'text-zinc-400' },
-  MEDIUM:   { label: 'Medium',   dot: 'bg-sky-400',     text: 'text-sky-300' },
-  HIGH:     { label: 'High',     dot: 'bg-orange-400',  text: 'text-orange-300' },
-  CRITICAL: { label: 'Critical', dot: 'bg-red-500',     text: 'text-red-300' },
+  LOW:      { label: 'Low',      dot: 'bg-gray-400 dark:bg-zinc-500',   text: 'text-gray-500 dark:text-zinc-400' },
+  MEDIUM:   { label: 'Medium',   dot: 'bg-sky-500 dark:bg-sky-400',     text: 'text-sky-600 dark:text-sky-300' },
+  CRITICAL: { label: 'Critical', dot: 'bg-red-500',                     text: 'text-red-600 dark:text-red-300' },
 }
 </script>
 

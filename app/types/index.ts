@@ -7,19 +7,11 @@
 // Enums (string unions — do not use Prisma enum directly on client)
 // ─────────────────────────────────────────────────────────────
 
-export type IncidentCategory =
-  | 'HARDWARE'
-  | 'SOFTWARE'
-  | 'NETWORK'
-  | 'ACCESS'
-  | 'EMAIL'
-  | 'PRINTER'
-  | 'PHONE'
-  | 'OTHER'
+export type IncidentCategory = 'HARDWARE' | 'SOFTWARE' | 'NETWORK' | 'OTHERS'
 
-export type IncidentPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+export type IncidentPriority = 'LOW' | 'MEDIUM' | 'CRITICAL'
 
-export type IncidentStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED'
+export type IncidentStatus = 'IN_PROGRESS' | 'RESOLVED' | 'IRRESOLVABLE'
 
 // ─────────────────────────────────────────────────────────────
 // Incident
@@ -110,24 +102,18 @@ export interface UpdateIncidentInput {
 export const CATEGORY_LABELS: Record<IncidentCategory, string> = {
   HARDWARE: 'Hardware',
   SOFTWARE: 'Software',
-  NETWORK: 'Network',
-  ACCESS: 'Access',
-  EMAIL: 'Email',
-  PRINTER: 'Printer',
-  PHONE: 'Phone',
-  OTHER: 'Other',
+  NETWORK:  'Network',
+  OTHERS:   'Others',
 }
 
 export const PRIORITY_LABELS: Record<IncidentPriority, string> = {
-  LOW: 'Low',
-  MEDIUM: 'Medium',
-  HIGH: 'High',
+  LOW:      'Low',
+  MEDIUM:   'Medium',
   CRITICAL: 'Critical',
 }
 
 export const STATUS_LABELS: Record<IncidentStatus, string> = {
-  OPEN: 'Open',
-  IN_PROGRESS: 'In Progress',
-  RESOLVED: 'Resolved',
-  CLOSED: 'Closed',
+  IN_PROGRESS:  'In Progress',
+  RESOLVED:     'Resolved',
+  IRRESOLVABLE: 'Irresolvable',
 }

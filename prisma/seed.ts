@@ -5,7 +5,6 @@ const prisma = new PrismaClient()
 async function main() {
   console.log('🌱 Seeding database...')
 
-  // Create sample incidents for development
   await prisma.incident.createMany({
     data: [
       {
@@ -13,14 +12,6 @@ async function main() {
         description: 'User reported that their laptop fails to connect to the company VPN since this morning. Error code: 0x800704D3.',
         reporterName: 'Ahmad Razif',
         category: 'NETWORK',
-        priority: 'HIGH',
-        status: 'OPEN',
-      },
-      {
-        title: 'Printer on Level 3 not printing',
-        description: 'The shared printer (HP LaserJet) on Level 3 is showing offline status. Multiple users affected.',
-        reporterName: 'Siti Hajar',
-        category: 'PRINTER',
         priority: 'MEDIUM',
         status: 'IN_PROGRESS',
       },
@@ -28,19 +19,27 @@ async function main() {
         title: 'Outlook not syncing emails',
         description: 'Outlook is stuck and not syncing new emails. User has tried restarting but the issue persists.',
         reporterName: 'Mohd Faizi',
-        category: 'EMAIL',
+        category: 'SOFTWARE',
         priority: 'MEDIUM',
         status: 'RESOLVED',
         resolutionNotes: 'Cleared the OST cache file and re-created the Outlook profile. Email sync restored.',
         resolvedAt: new Date(),
       },
       {
-        title: 'New staff account creation',
+        title: 'Shared printer showing offline',
+        description: 'The shared printer (HP LaserJet) on Level 3 is showing offline status. Multiple users affected.',
+        reporterName: 'Siti Hajar',
+        category: 'HARDWARE',
+        priority: 'MEDIUM',
+        status: 'IN_PROGRESS',
+      },
+      {
+        title: 'New staff account creation request',
         description: 'Requesting new Active Directory account and email for new staff member joining on Monday.',
         reporterName: 'HR Department',
-        category: 'ACCESS',
+        category: 'OTHERS',
         priority: 'LOW',
-        status: 'CLOSED',
+        status: 'RESOLVED',
         resolutionNotes: 'Account created and credentials delivered via sealed envelope.',
         resolvedAt: new Date(),
       },

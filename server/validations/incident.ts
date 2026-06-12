@@ -8,16 +8,12 @@ export const IncidentCategorySchema = z.enum([
   'HARDWARE',
   'SOFTWARE',
   'NETWORK',
-  'ACCESS',
-  'EMAIL',
-  'PRINTER',
-  'PHONE',
-  'OTHER',
+  'OTHERS',
 ])
 
-export const IncidentPrioritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'])
+export const IncidentPrioritySchema = z.enum(['LOW', 'MEDIUM', 'CRITICAL'])
 
-export const IncidentStatusSchema = z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'])
+export const IncidentStatusSchema = z.enum(['IN_PROGRESS', 'RESOLVED', 'IRRESOLVABLE'])
 
 // ─────────────────────────────────────────────────────────────
 // Create Incident
