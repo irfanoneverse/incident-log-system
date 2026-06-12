@@ -4,7 +4,7 @@ import { CATEGORY_LABELS } from '~/types'
 
 useHead({ title: 'Incidents' })
 
-const { fetchIncidents, updateIncident } = useIncidents()
+const { fetchIncidents, updateIncident, deleteIncident } = useIncidents()
 const route = useRoute()
 const router = useRouter()
 
@@ -71,6 +71,30 @@ async function handleStatusChange(incident: IncidentRow, status: IncidentStatus)
     await updateIncident(incident.id, { status })
   } catch {
     statusOverrides.delete(incident.id) // revert to server value on failure
+  }
+}
+
+const pendingDeleteId = ref<string | null>(null)
+const pendingDeleteTitle = ref('')
+const deleting = ref(false)
+
+function requestDelete(incident: IncidentRow) {
+  pendingDeleteId.value = incident.id
+  pendingDeleteTitle.value = incident.title
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId.value) return
+  const id = pendingDeleteId.value
+  deleting.value = true
+  try {
+    await deleteIncident(id)
+    pendingDeleteId.value = null
+    await refresh()
+  } catch {
+    // keep dialog open so user sees it failed
+  } finally {
+    deleting.value = false
   }
 }
 
@@ -154,7 +178,7 @@ const selectCls = 'px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text
               :class="filters.sortBy === 'createdAt' ? 'text-gray-900 dark:text-zinc-200' : 'text-gray-500 dark:text-zinc-500'"
               @click="toggleSort('createdAt')"
             >Created{{ sortIcon('createdAt') }}</th>
-          </tr>
+            <th class="w-10" /></tr>
         </thead>
         <tbody class="divide-y divide-gray-100 dark:divide-zinc-800/70">
           <tr v-if="pending">
@@ -196,6 +220,18 @@ const selectCls = 'px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text
             <td class="px-4 py-3 text-[13px] text-gray-400 whitespace-nowrap tabular-nums dark:text-zinc-500">
               {{ formatDate(incident.createdAt) }}
             </td>
+            <td class="pr-3 py-3 text-right">
+              <button
+                class="opacity-0 group-hover:opacity-100 p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all dark:text-zinc-500 dark:hover:text-red-400 dark:hover:bg-red-500/10"
+                title="Delete incident"
+                @click.stop="requestDelete(incident)"
+              >
+                <svg class="w-3.5 h-3.5" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                  <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                </svg>
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -206,5 +242,16 @@ const selectCls = 'px-2.5 py-1.5 bg-white border border-gray-300 rounded-lg text
         @change="setFilter('page', $event)"
       />
     </div>
+
   </div>
+
+  <ConfirmDialog
+    :open="!!pendingDeleteId"
+    title="Delete incident?"
+    :message="`'${pendingDeleteTitle}' will be permanently deleted and cannot be recovered.`"
+    confirm-label="Delete"
+    :loading="deleting"
+    @confirm="confirmDelete"
+    @cancel="pendingDeleteId = null"
+  />
 </template>

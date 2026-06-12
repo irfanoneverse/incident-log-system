@@ -17,10 +17,11 @@ if (!incident.value) {
 
 useHead(() => ({ title: incident.value?.title ?? 'Incident' }))
 
-const editing  = ref(false)
-const saving   = ref(false)
-const deleting = ref(false)
-const saveError = ref('')
+const editing       = ref(false)
+const saving        = ref(false)
+const deleting      = ref(false)
+const confirmDelete = ref(false)
+const saveError     = ref('')
 
 async function handleUpdate(data: UpdateIncidentInput) {
   saving.value = true
@@ -37,8 +38,8 @@ async function handleUpdate(data: UpdateIncidentInput) {
 }
 
 async function handleDelete() {
-  if (!confirm('Delete this incident? This action cannot be undone.')) return
   deleting.value = true
+  confirmDelete.value = false
   try {
     await deleteIncident(id)
     await navigateTo('/incidents')
@@ -79,7 +80,7 @@ async function handleDelete() {
             <button
               :disabled="deleting"
               class="h-8 px-3 text-[13px] font-medium border border-gray-300 text-red-500 rounded-lg hover:border-red-300 hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors dark:border-zinc-700 dark:text-red-400 dark:hover:border-red-800 dark:hover:bg-red-950/40"
-              @click="handleDelete"
+              @click="confirmDelete = true"
             >
               {{ deleting ? 'Deleting…' : 'Delete' }}
             </button>
@@ -142,4 +143,14 @@ async function handleDelete() {
 
     </template>
   </div>
+
+  <ConfirmDialog
+    :open="confirmDelete"
+    title="Delete incident?"
+    :message="`'${incident?.title}' will be permanently deleted and cannot be recovered.`"
+    confirm-label="Delete"
+    :loading="deleting"
+    @confirm="handleDelete"
+    @cancel="confirmDelete = false"
+  />
 </template>
